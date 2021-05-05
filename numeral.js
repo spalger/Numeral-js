@@ -36,16 +36,28 @@ var numeralFactory = function () {
      * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
      * problems for accounting- and finance-related software.
      */
-    function toFixed (value, precision, roundingFunction, optionals) {
-        var power = Math.pow(10, precision),
+    function toFixed (value, maxDecimals, roundingFunction, optionals) {
+        var splitValue = value.toString().split('.'),
+            minDecimals = maxDecimals - (optionals || 0),
+            boundedPrecision,
             optionalsRegExp,
+            power,
             output;
 
-        // Multiply up by precision, round accurately, then divide and use native toFixed():
-        output = (roundingFunction(value + 'e+' + precision) / power).toFixed(precision);
+        // Use the smallest precision value possible to avoid errors from floating point representation
+        if (splitValue.length === 2) {
+            boundedPrecision = Math.min(Math.max(splitValue[1].length, minDecimals), maxDecimals);
+        } else {
+            boundedPrecision = minDecimals;
+        }
 
-        if (optionals) {
-            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
+        power = Math.pow(10, boundedPrecision);
+
+        // Multiply up by precision, round accurately, then divide and use native toFixed():
+        output = (roundingFunction(value + 'e+' + boundedPrecision) / power).toFixed(boundedPrecision);
+
+        if (optionals > maxDecimals - boundedPrecision) {
+            optionalsRegExp = new RegExp('\\.?0{1,' + (optionals - (maxDecimals - boundedPrecision)) + '}$');
             output = output.replace(optionalsRegExp, '');
         }
 
