@@ -1,6 +1,6 @@
 {
   "name": "@elastic/numeral",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Fork of numeraljs for use in Kibana",
   "authors": [
     "Adam Draper <adamwdraper@gmail.com> (http://github.com/adamwdraper)",
