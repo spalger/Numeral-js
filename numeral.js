@@ -211,11 +211,13 @@ var numeralFactory = function () {
     }
 
     function formatTime (n) {
-        var hours = Math.floor(Math.abs(n._value)/60/60),
-            minutes = Math.floor((Math.abs(n._value) - (hours * 60 * 60))/60),
-            seconds = Math.round(Math.abs(n._value) - (hours * 60 * 60) - (minutes * 60)),
+        var hours = Math.floor(Math.abs(n._value)/3600),
+            minutes = Math.floor((Math.abs(n._value) - (hours * 3600))/60),
+            seconds = Math.floor(Math.abs(n._value) - (hours * 3600) - (minutes * 60)),
+            milliseconds = Math.floor((n._value * 1000) % 1000)
             direction = n._value < 0 ? '-' : '';
-        return direction + hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
+
+        return `${direction}${hours}:${padZero(minutes)}:${padZero(seconds)}.[${padZero(milliseconds, 3)}]`;
     }
 
     function unformatTime (string) {
@@ -228,12 +230,16 @@ var numeralFactory = function () {
             // minutes
             seconds = seconds + (Number(timeArray[1]) * 60);
             // seconds
-            seconds = seconds + Number(timeArray[2]);
+            seconds = seconds + Number(timeArray[2].split(".")[0]);
+            //milliseconds
+            seconds = seconds + Number(timeArray[2].split(".")[1].substr(1, 3)) / 1000;
         } else if (timeArray.length === 2) {
             // minutes
             seconds = seconds + (Number(timeArray[0]) * 60);
             // seconds
-            seconds = seconds + Number(timeArray[1]);
+            seconds = seconds + Number(timeArray[1].split(".")[0]);
+            //milliseconds
+            seconds = seconds + Number(timeArray[1].split(".")[1].substr(1, 3)) / 1000;
         }
         return Number(seconds);
     }
@@ -489,6 +495,10 @@ var numeralFactory = function () {
         }
     }
 
+    function padZero(value, length = 2) {
+        return value.toString().padStart(length, '0');
+    }
+      
     /************************************
         Top Level Functions
     ************************************/
