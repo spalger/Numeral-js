@@ -86,7 +86,7 @@ exports.unformat = {
         test.expect(1);
 
         var tests = [
-                ['2:23:57', 8637]
+                ['2:23:57.[012]', 8637.012]
             ];
 
         for (var i = 0; i < tests.length; i++) {
